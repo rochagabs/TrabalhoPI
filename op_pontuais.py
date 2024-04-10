@@ -1,15 +1,11 @@
 def ler_arquivo_ppm(nome_arquivo):
     with open(nome_arquivo, 'r') as arquivo:
-        # Lê a primeira linha para obter o tipo de arquivo (deve ser "P2" para PPM ASCII)
         tipo_arquivo = arquivo.readline().strip()
-        if tipo_arquivo != "P2":
-            raise ValueError("O arquivo não é do tipo P2 (PPM ASCII)")
+        if tipo_arquivo != "P1":
+            raise ValueError("O arquivo não é do tipo PGM P1")
 
         # Lê as dimensões da imagem (largura e altura)
         largura, altura = map(int, arquivo.readline().split())
-
-        # Lê o valor máximo de intensidade (geralmente 255)
-        valor_maximo = int(arquivo.readline().strip())
 
         # Lê os dados de intensidade pixel por pixel
         dados_intensidade = []
@@ -18,7 +14,7 @@ def ler_arquivo_ppm(nome_arquivo):
             if linha.strip() and not linha.startswith('#'):
                 dados_intensidade.extend(map(int, linha.split()))
 
-    return largura, altura, valor_maximo, dados_intensidade
+    return largura, altura, dados_intensidade
 
 
 #print(f"Largura: {largura}")
@@ -26,11 +22,10 @@ def ler_arquivo_ppm(nome_arquivo):
 #print(f"Valor Máximo de Intensidade: {valor_maximo}")
 #print(f"Dados de Intensidade: {dados_intensidade}")
 
-def salvar_arquivo_ppm(nome_arquivo, largura, altura, valor_maximo, dados_imagem):
+def salvar_arquivo_ppm(nome_arquivo, largura, altura, dados_imagem):
     with open(nome_arquivo, 'w') as arquivo:
-        arquivo.write('P2\n')
+        arquivo.write('P1\n')
         arquivo.write(f"{largura} {altura}\n")
-        arquivo.write(f"{valor_maximo}\n")
         
         # Escreve os dados da imagem
         for i in range(0, len(dados_imagem), largura):
