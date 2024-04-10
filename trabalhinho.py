@@ -1,3 +1,11 @@
+# Pra quem for mexer:
+# O filtro da mediana não tá funcionando nas imagens que ela passou de exemplo (1653 x 2338)
+# Mas tá funcionando nas imagens teste e teste2 (5x5 e 5x8), tb testei com imagens 7x5 e 5x7
+
+
+
+
+
 def ler_arquivo_ppm(nome_arquivo):
     with open(nome_arquivo, 'r') as arquivo:
         tipo_arquivo = arquivo.readline().strip()
@@ -5,7 +13,15 @@ def ler_arquivo_ppm(nome_arquivo):
             raise ValueError("O arquivo não é do tipo PGM P1")
 
         # Lê as dimensões da imagem (largura e altura)
-        largura, altura = map(int, arquivo.readline().split())
+        # Lê as dimensões da imagem (largura e altura)
+        largura, altura = 0, 0
+        for linha in arquivo:
+            if not linha.strip():  # Ignora linhas em branco
+                continue
+            if linha.startswith('#'):  # Ignora comentários
+                continue
+            largura, altura = map(int, linha.split())
+            break  # Encerra após a leitura da largura e altura
 
         # Lê os dados de intensidade pixel por pixel
         dados_intensidade = []
@@ -17,10 +33,71 @@ def ler_arquivo_ppm(nome_arquivo):
     return largura, altura, dados_intensidade
 
 
-#print(f"Largura: {largura}")
-#print(f"Altura: {altura}")
+# Função pra transformar uma lista em uma matriz
+def cria_matriz(linhas, colunas, lista):
+    matriz = []
+    for i in range(linhas):
+        lista_linhas = []
+        for j in range(colunas):
+            #print(i,j)
+            lista_linhas.append(lista[colunas * i + j])
+        matriz.append(lista_linhas)
+    return matriz
+
+
+# Função pra transformar uma matriz em uma lista
+def cria_lista(matriz):
+    lista = [item for sublista in matriz for item in sublista]
+    return lista
+
+
+# Pega os vizinhos do valor em matriz[i][j] (considerando máscara 3x3)
+def pega_vizinhos(matriz,i,j):
+    mascara = [matriz[i][j], matriz[i + 1][j], matriz[i + 1][j + 1], matriz[i - 1][j], matriz[i - 1][j + 1],
+               matriz[i - 1][j - 1], matriz[i][j + 1], matriz[i][j - 1], matriz[i + 1][j - 1]]
+    return mascara
+
+# Aplica o filtro da mediana
+
+# O filtro tá funcionando assim:
+# 1. Lê a imagem que você quer aplicar o filtro
+# 2. Cria uma matriz a partir do valor de "intensidade" encontrado na imagem
+# 3. Cria uma matriz pra guardar os novos valores depois do filtro
+# 4. Começa o loop em i = 1, j = 1 pegando os vizinhos
+# 5. Ordena e pega o quarto elemento (mediana) e ja era
+def filtro_mediana(imagem):
+    largura, altura, intensidade = ler_arquivo_ppm(imagem)
+    imagem_matriz = cria_matriz(altura,largura,intensidade)
+    imagem_matriz_filtrada = cria_matriz(altura,largura,intensidade)
+
+    for i in range(1,altura-1):
+        for j in range(1,largura-1):
+            #print(f"{imagem_matriz[i][j]}: {i} {j}")
+            mascara = pega_vizinhos(imagem_matriz,i,j)
+            mascara.sort()
+            imagem_matriz_filtrada[i][j] = mascara[4]
+
+    imagem_matriz_filtrada = cria_lista(imagem_matriz_filtrada)
+    return imagem_matriz_filtrada
+
+l,a,intensidade = ler_arquivo_ppm("ImagensTeste/lorem_s12_c02_just.pbm")
+
+
+#print(intensidade)
+print(l)
+print(a)
+# lorem_s12_c02_just.pbm, lorem_s12_c02_espacos_noise.pbm
+imagem_nova = filtro_mediana("ImagensTeste/teste2.pbm")
+#print(f"{novo}")
+
+
+
+#print(f"Largura: {l}")
+#print(f"Altura: {a}")
 #print(f"Valor Máximo de Intensidade: {valor_maximo}")
-#print(f"Dados de Intensidade: {dados_intensidade}")
+#print(f"Dados de Intensidade: {intensidade}")
+#print(type(intensidade))
+
 
 def salvar_arquivo_ppm(nome_arquivo, largura, altura, dados_imagem):
     with open(nome_arquivo, 'w') as arquivo:
@@ -33,7 +110,7 @@ def salvar_arquivo_ppm(nome_arquivo, largura, altura, dados_imagem):
             arquivo.write(f"{linha}\n")
 
 
-
+salvar_arquivo_ppm("ImagensTeste/escrever.pbm",l,a,imagem_nova)
 
 # Exemplo de uso
 #nome_arquivo_entrada = 'Figuras/lago_escuro.pgm'
