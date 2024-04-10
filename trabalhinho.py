@@ -28,7 +28,11 @@ def ler_arquivo_ppm(nome_arquivo):
         for linha in arquivo:
             # Ignora linhas em branco ou comentários
             if linha.strip() and not linha.startswith('#'):
-                dados_intensidade.extend(map(int, linha.split()))
+                # Remove espaços em branco e quebra a linha em caracteres individuais
+                valores = linha.strip()
+                for valor in valores:
+                    if valor.isdigit():  # Verifica se o caractere é um dígito
+                        dados_intensidade.append(int(valor))
 
     return largura, altura, dados_intensidade
 
@@ -80,14 +84,14 @@ def filtro_mediana(imagem):
     imagem_matriz_filtrada = cria_lista(imagem_matriz_filtrada)
     return imagem_matriz_filtrada
 
-l,a,intensidade = ler_arquivo_ppm("ImagensTeste/lorem_s12_c02_just.pbm")
+l,a,intensidade = ler_arquivo_ppm("ImagensTeste/lorem_s12_c02_noise.pbm")
 
 
-#print(intensidade)
+print(intensidade)
 print(l)
 print(a)
 # lorem_s12_c02_just.pbm, lorem_s12_c02_espacos_noise.pbm
-imagem_nova = filtro_mediana("ImagensTeste/teste2.pbm")
+imagem_nova = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
 #print(f"{novo}")
 
 
