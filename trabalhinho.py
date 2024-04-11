@@ -1,18 +1,11 @@
-# Pra quem for mexer:
-# O filtro da mediana não tá funcionando nas imagens que ela passou de exemplo (1653 x 2338)
-# Mas tá funcionando nas imagens teste e teste2 (5x5 e 5x8), tb testei com imagens 7x5 e 5x7
 
 
-
-
-
-def ler_arquivo_ppm(nome_arquivo):
+def ler_arquivo_pgm(nome_arquivo):
     with open(nome_arquivo, 'r') as arquivo:
         tipo_arquivo = arquivo.readline().strip()
         if tipo_arquivo != "P1":
             raise ValueError("O arquivo não é do tipo PGM P1")
 
-        # Lê as dimensões da imagem (largura e altura)
         # Lê as dimensões da imagem (largura e altura)
         largura, altura = 0, 0
         for linha in arquivo:
@@ -23,7 +16,7 @@ def ler_arquivo_ppm(nome_arquivo):
             largura, altura = map(int, linha.split())
             break  # Encerra após a leitura da largura e altura
 
-        # Lê os dados de intensidade pixel por pixel
+        # Lê os dados de intensidade (preto 1 ou branco 0), pixel por pixel
         dados_intensidade = []
         for linha in arquivo:
             # Ignora linhas em branco ou comentários
@@ -35,6 +28,21 @@ def ler_arquivo_ppm(nome_arquivo):
                         dados_intensidade.append(int(valor))
 
     return largura, altura, dados_intensidade
+
+
+#vc da os dados e ele salvo no arquivo
+def salvar_arquivo_pgm(nome_arquivo, largura, altura, dados_imagem):
+    with open(nome_arquivo, 'w') as arquivo:
+        arquivo.write('P1\n')
+        arquivo.write(f"{largura} {altura}\n")
+        
+        # Escreve os dados da imagem
+        for i in range(0, len(dados_imagem), largura):
+            linha = " ".join(map(str, dados_imagem[i:i+largura]))
+            arquivo.write(f"{linha}\n")
+    print("Salva com sucesso")
+
+
 
 
 # Função pra transformar uma lista em uma matriz
@@ -70,7 +78,7 @@ def pega_vizinhos(matriz,i,j):
 # 4. Começa o loop em i = 1, j = 1 pegando os vizinhos
 # 5. Ordena e pega o quarto elemento (mediana) e ja era
 def filtro_mediana(imagem):
-    largura, altura, intensidade = ler_arquivo_ppm(imagem)
+    largura, altura, intensidade = ler_arquivo_pgm(imagem)
     imagem_matriz = cria_matriz(altura,largura,intensidade)
     imagem_matriz_filtrada = cria_matriz(altura,largura,intensidade)
 
@@ -84,18 +92,52 @@ def filtro_mediana(imagem):
     imagem_matriz_filtrada = cria_lista(imagem_matriz_filtrada)
     return imagem_matriz_filtrada
 
-l,a,intensidade = ler_arquivo_ppm("ImagensTeste/lorem_s12_c02_noise.pbm")
 
 
-print(intensidade)
-print(l)
-print(a)
+def dilatacao(largura, altura, intensidade, elemento_estruturante):
+    imagem_matriz = cria_matriz(altura, largura, intensidade)
+    imagem_matriz_filtrada = cria_matriz(altura, largura, intensidade)
+    qtde_linhas_elemento = len(elemento_estruturante)
+    qtde_colunas_elemento = len(elemento_estruturante[0])
+
+    # Loop pelos pixels da imagem, exceto a borda
+    for i in range(1, altura - 1):
+        for j in range(1, largura - 1):
+            # Se o pixel na imagem original estiver branco (valor 1)
+            if imagem_matriz[i][j] == 1:
+                # Aplica a dilatação usando o elemento estruturante
+                for k in range(qtde_linhas_elemento):
+                    for l in range(qtde_colunas_elemento):
+                        # Atualiza os pixels na imagem filtrada com base no elemento estruturante
+                        if elemento_estruturante[k][l] == 1:
+                            # Define o pixel correspondente na imagem filtrada como branco (valor 1)
+                            imagem_matriz_filtrada[i - 1 + k][j - 1 + l] = 1
+
+    imagem_matriz_filtrada = cria_lista(imagem_matriz_filtrada)
+    return imagem_matriz_filtrada
+
+
+
+#l,a,intensidade = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
+largura, altura, intensidade = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
+
+lista = [0, 0, 0, 0, 1, 1, 0, 0, 0]
+elemento_estruturante = cria_matriz(3, 3, lista)
+
+# Aplicar a dilatação
+imagem_nova = dilatacao(largura, altura, cria_matriz(altura, largura, intensidade),elemento_estruturante)
+
+# Salvar a nova imagem
+salvar_arquivo_pgm("ImagensTeste/boraver.pbm", largura, altura, imagem_nova)
+
+
+
+
+#print(intensidade)
+#print(l)
+#print(a)
 # lorem_s12_c02_just.pbm, lorem_s12_c02_espacos_noise.pbm
-imagem_nova = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
-#print(f"{novo}")
-
-
-
+#imagem_nova = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
 #print(f"Largura: {l}")
 #print(f"Altura: {a}")
 #print(f"Valor Máximo de Intensidade: {valor_maximo}")
@@ -103,21 +145,13 @@ imagem_nova = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
 #print(type(intensidade))
 
 
-def salvar_arquivo_ppm(nome_arquivo, largura, altura, dados_imagem):
-    with open(nome_arquivo, 'w') as arquivo:
-        arquivo.write('P1\n')
-        arquivo.write(f"{largura} {altura}\n")
-        
-        # Escreve os dados da imagem
-        for i in range(0, len(dados_imagem), largura):
-            linha = " ".join(map(str, dados_imagem[i:i+largura]))
-            arquivo.write(f"{linha}\n")
 
 
-salvar_arquivo_ppm("ImagensTeste/escrever.pbm",l,a,imagem_nova)
+
+
 
 # Exemplo de uso
 #nome_arquivo_entrada = 'Figuras/lago_escuro.pgm'
 
 # Lê a imagem do arquivo de entrada
-#largura, altura, valor_maximo, dados_imagem = ler_arquivo_ppm(nome_arquivo_entrada)
+#largura, altura, valor_maximo, dados_imagem = ler_arquivo_pgm(nome_arquivo_entrada)
