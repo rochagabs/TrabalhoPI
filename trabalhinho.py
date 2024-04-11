@@ -95,7 +95,8 @@ def filtro_mediana(imagem):
     return imagem_matriz_filtrada
 
 
-def dilatacao(largura, altura, intensidade, elemento_estruturante):
+def dilatacao(imagem, elemento_estruturante):
+    largura, altura, intensidade = ler_arquivo_pgm(imagem)
     imagem_matriz = lista_para_matriz(altura, largura, intensidade)
     imagem_matriz_filtrada = lista_para_matriz(altura, largura, intensidade)
     qtde_linhas_elemento = len(elemento_estruturante)
@@ -117,7 +118,8 @@ def dilatacao(largura, altura, intensidade, elemento_estruturante):
     imagem_matriz_filtrada = cria_lista(imagem_matriz_filtrada)
     return imagem_matriz_filtrada
 
-def erosao(largura, altura, intensidade, elemento_estruturante):
+def erosao(imagem, elemento_estruturante):
+    largura, altura, intensidade = ler_arquivo_pgm(imagem)
     imagem_matriz = lista_para_matriz(altura, largura, intensidade)
     imagem_matriz_filtrada = lista_para_matriz(altura, largura, intensidade)
     qtde_linhas_elemento = len(elemento_estruturante)
@@ -166,16 +168,8 @@ elemento_estruturante = lista_para_matriz(3, 3, listaa)
 #print(elemento_estruturante)
 
 # Aplicar a dilatação
-<<<<<<< Updated upstream
 #imagem_nova = dilatacao(l, a, it,elemento_estruturante)
 aplicar_negativo("ImagensTeste/lorem_s12_c02_noise.pbm",  "ImagensTeste/neg.pbm")
-=======
-#imagem_dilatacao = dilatacao(l, a, it,elemento_estruturante)
-
-#Aplicar a erosão
-#imagem_erosao = erosao(l, a, it, elemento_estruturante)
-
->>>>>>> Stashed changes
 # for i in range(10):
 #     l, a, it = ler_arquivo_pgm("ImagensTeste/escrever.pbm")
 #     img = dilatacao(l, a, it, elemento_estruturante)
@@ -183,18 +177,14 @@ aplicar_negativo("ImagensTeste/lorem_s12_c02_noise.pbm",  "ImagensTeste/neg.pbm"
 
 # Aplicar filtro da mediana
 imagem_filtrada = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
-
-# Salvar a nova imagem
-<<<<<<< Updated upstream
-#salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, negativa)
-=======
 salvar_arquivo_pgm("ImagensTeste/imagem_filtrada.pbm", l, a, imagem_filtrada)
->>>>>>> Stashed changes
+# Salvar a nova imagem
+#salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, negativa)
 
 l, a, it = ler_arquivo_pgm("ImagensTeste/imagem_filtrada.pbm")
 
-imagem_dilatacao = dilatacao(l, a, it,elemento_estruturante)
-imagem_erosao = erosao(l, a, it, elemento_estruturante)
+imagem_dilatacao = dilatacao("ImagensTeste/imagem_filtrada.pbm",elemento_estruturante)
+imagem_erosao = erosao("ImagensTeste/imagem_filtrada.pbm", elemento_estruturante)
 
 salvar_arquivo_pgm("ImagensTeste/imagem_dilatada.pbm", l, a, imagem_dilatacao)
 salvar_arquivo_pgm("ImagensTeste/imagem_erudita.pbm", l, a, imagem_erosao)
