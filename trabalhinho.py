@@ -28,7 +28,7 @@ def ler_arquivo_pgm(nome_arquivo):
     return largura, altura, dados_intensidade
 
 
-#vc da os dados e ele salvo no arquivo
+#Você dá os dados e ele salva no arquivo
 def salvar_arquivo_pgm(nome_arquivo, largura, altura, dados_imagem):
     with open(nome_arquivo, 'w') as arquivo:
         arquivo.write('P1\n')
@@ -95,7 +95,8 @@ def filtro_mediana(imagem):
     return imagem_matriz_filtrada
 
 
-def dilatacao(largura, altura, intensidade, elemento_estruturante):
+def dilatacao(imagem, elemento_estruturante):
+    largura, altura, intensidade = ler_arquivo_pgm(imagem)
     imagem_matriz = lista_para_matriz(altura, largura, intensidade)
     imagem_matriz_filtrada = lista_para_matriz(altura, largura, intensidade)
     qtde_linhas_elemento = len(elemento_estruturante)
@@ -117,7 +118,45 @@ def dilatacao(largura, altura, intensidade, elemento_estruturante):
     imagem_matriz_filtrada = cria_lista(imagem_matriz_filtrada)
     return imagem_matriz_filtrada
 
+def erosao(imagem, elemento_estruturante):
+    largura, altura, intensidade = ler_arquivo_pgm(imagem)
+    imagem_matriz = lista_para_matriz(altura, largura, intensidade)
+    imagem_matriz_filtrada = lista_para_matriz(altura, largura, intensidade)
+    qtde_linhas_elemento = len(elemento_estruturante)
+    qtde_colunas_elemento = len(elemento_estruturante[0])
 
+    #Loop pelos pixels da imagem, exceto a borda
+    for i in range(1, altura - 1):
+        for j in range(1, largura - 1):
+            #Se o pixel na imagem original estiver braco (valor 1)
+            if imagem_matriz[i][j] == 1:
+                #Aplica erosão usando o elemento estruturante
+                for k in range(qtde_linhas_elemento):
+                    for l in range(qtde_colunas_elemento):
+                        #Verifica se o pixel do elemento estruturante corresponde a um pixel branco na imagem
+                        if elemento_estruturante[k][l] == 1 and imagem_matriz[i - 1 + k][j - 1 +l] != 1:
+                            #Se algum dos pixels do elemento estruturante não corresponder a um pixel branco na imagem,
+                            #o pixel na imagem filtrada é definido como preto (valor 0)
+                            imagem_matriz_filtrada[i][j] = 0
+                            break
+                        else:
+                            continue
+                        break
+
+    imagem_matriz_filtrada = cria_lista(imagem_matriz_filtrada)
+    return imagem_matriz_filtrada
+
+
+def abertura(largura, altura, intensidade, elem):
+    e = erosao(largura,altura,intensidade,elem)
+    r = dilatacao(largura,altura,e,elem)
+    return r
+
+
+def fechamento(largura, altura, intensidade, elem):
+    d = dilatacao(largura,altura,intensidade,elem)
+    r = erosao(largura,altura,d,elem)
+    return r
 
 def aplicar_negativo (nome_arquivo_entrada, nome_arquivo_saida):
     largura, altura, dados_intensidade = ler_arquivo_pgm(nome_arquivo_entrada)
@@ -195,14 +234,15 @@ print(elemento_estruturante) """
 # salvar_arquivo_pgm("imagens-salvas/imagem-suavizada.pbm", l, a, imagem_nova)
 
 # Salvar a nova imagem
-# salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, imagem_nova)
+#salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, negativa)
 
-# Aplicar sobel X
-imagem_nova = sobel("imagens-salvas/imagem-suavizada.pbm")
-salvar_arquivo_pgm("imagens-salvas/sobel-final.pbm", l, a, imagem_nova)
+l, a, it = ler_arquivo_pgm("ImagensTeste/imagem_filtrada.pbm")
 
+imagem_dilatacao = dilatacao("ImagensTeste/imagem_filtrada.pbm",elemento_estruturante)
+imagem_erosao = erosao("ImagensTeste/imagem_filtrada.pbm", elemento_estruturante)
 
-
+salvar_arquivo_pgm("ImagensTeste/imagem_dilatada.pbm", l, a, imagem_dilatacao)
+salvar_arquivo_pgm("ImagensTeste/imagem_erudita.pbm", l, a, imagem_erosao)
 
 #print(intensidade)
 #print(l)
