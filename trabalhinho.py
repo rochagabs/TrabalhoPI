@@ -48,11 +48,17 @@ def salvar_arquivo_pgm(nome_arquivo, largura, altura, dados_imagem):
 # Função pra transformar uma lista em uma matriz
 def cria_matriz(linhas, colunas, lista):
     matriz = []
+    idx = 0
     for i in range(linhas):
         lista_linhas = []
         for j in range(colunas):
-            #print(i,j)
-            lista_linhas.append(lista[colunas * i + j])
+            # Verifica se ainda há elementos na lista
+            if idx < len(lista):
+                lista_linhas.append(lista[idx])
+                idx += 1
+            else:
+                # Se a lista terminar antes da matriz, preenche com zero
+                lista_linhas.append(0)
         matriz.append(lista_linhas)
     return matriz
 
@@ -128,7 +134,7 @@ elemento_estruturante = cria_matriz(3, 3, lista)
 imagem_nova = dilatacao(largura, altura, cria_matriz(altura, largura, intensidade),elemento_estruturante)
 
 # Salvar a nova imagem
-salvar_arquivo_pgm("ImagensTeste/boraver.pbm", largura, altura, imagem_nova)
+salvar_arquivo_pgm("ImagensTeste/escrever.pbm", largura, altura, imagem_nova)
 
 
 
