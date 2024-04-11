@@ -1,5 +1,3 @@
-
-
 def ler_arquivo_pgm(nome_arquivo):
     with open(nome_arquivo, 'r') as arquivo:
         tipo_arquivo = arquivo.readline().strip()
@@ -43,21 +41,6 @@ def salvar_arquivo_pgm(nome_arquivo, largura, altura, dados_imagem):
     print("Salva com sucesso")
 
 
-
-
-# Função pra transformar uma lista em uma matriz
-# Função pra transformar uma lista em uma matriz
-# def cria_matriz(linhas, colunas, lista):
-#     matriz = []
-#     for i in range(linhas):
-#         lista_linhas = []
-#         for j in range(colunas):
-#             #print(i,j)
-#             lista_linhas.append(lista[colunas * i + j])
-#         matriz.append(lista_linhas)
-#     return matriz
-
-
 # Nova função pra criar matriz
 def lista_para_matriz(linhas,colunas,lista):
     if linhas * colunas != len(lista):
@@ -75,24 +58,6 @@ def lista_para_matriz(linhas,colunas,lista):
     return matriz
 
 
-def cria_matriz(linhas, colunas, lista):
-    matriz = []
-    idx = 0
-    for i in range(linhas):
-        lista_linhas = []
-        for j in range(colunas):
-            #print(i,j)
-            lista_linhas.append(lista[colunas * i + j])
-            # Verifica se ainda há elementos na lista
-            if idx < len(lista):
-                #lista_linhas.append(lista[idx])
-                idx += 1
-            else:
-                # Se a lista terminar antes da matriz, preenche com zero
-                lista_linhas.append(0)
-        matriz.append(lista_linhas)
-    return matriz
-
 # Função pra transformar uma matriz em uma lista
 def cria_lista(matriz):
     lista = [item for sublista in matriz for item in sublista]
@@ -104,6 +69,7 @@ def pega_vizinhos(matriz,i,j):
     mascara = [matriz[i][j], matriz[i + 1][j], matriz[i + 1][j + 1], matriz[i - 1][j], matriz[i - 1][j + 1],
                matriz[i - 1][j - 1], matriz[i][j + 1], matriz[i][j - 1], matriz[i + 1][j - 1]]
     return mascara
+
 
 # Aplica o filtro da mediana
 
