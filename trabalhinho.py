@@ -95,7 +95,8 @@ def filtro_mediana(imagem):
     return imagem_matriz_filtrada
 
 
-def dilatacao(largura, altura, intensidade, elemento_estruturante):
+def dilatacao(imagem, elemento_estruturante):
+    largura, altura, intensidade = ler_arquivo_pgm(imagem)
     imagem_matriz = lista_para_matriz(altura, largura, intensidade)
     imagem_matriz_filtrada = lista_para_matriz(altura, largura, intensidade)
     qtde_linhas_elemento = len(elemento_estruturante)
@@ -117,8 +118,8 @@ def dilatacao(largura, altura, intensidade, elemento_estruturante):
     imagem_matriz_filtrada = cria_lista(imagem_matriz_filtrada)
     return imagem_matriz_filtrada
 
-
-def erosao(largura, altura, intensidade, elemento_estruturante):
+def erosao(imagem, elemento_estruturante):
+    largura, altura, intensidade = ler_arquivo_pgm(imagem)
     imagem_matriz = lista_para_matriz(altura, largura, intensidade)
     imagem_matriz_filtrada = lista_para_matriz(altura, largura, intensidade)
     qtde_linhas_elemento = len(elemento_estruturante)
@@ -146,18 +147,6 @@ def erosao(largura, altura, intensidade, elemento_estruturante):
     return imagem_matriz_filtrada
 
 
-def abertura(largura, altura, intensidade, elem):
-    e = erosao(largura,altura,intensidade,elem)
-    r = dilatacao(largura,altura,e,elem)
-    return r
-
-
-def fechamento(largura, altura, intensidade, elem):
-    d = dilatacao(largura,altura,intensidade,elem)
-    r = erosao(largura,altura,d,elem)
-    return r
-
-
 def aplicar_negativo (nome_arquivo_entrada, nome_arquivo_saida):
     largura, altura, dados_intensidade = ler_arquivo_pgm(nome_arquivo_entrada)
     imagem_matriz = lista_para_matriz(altura,largura,dados_intensidade)
@@ -168,50 +157,37 @@ def aplicar_negativo (nome_arquivo_entrada, nome_arquivo_saida):
             imagem_negativa[i][j] = 1-imagem_matriz[i][j]
     salvar_arquivo_pgm(nome_arquivo_saida, largura, altura, cria_lista(imagem_negativa))
 
-#l,a, it = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
+
+
+#l,a,intensidade = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
 l, a, it = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
+
+
 listaa = [0, 0, 0, 0, 1, 1, 0, 0, 0]
 elemento_estruturante = lista_para_matriz(3, 3, listaa)
 #print(elemento_estruturante)
 
-
-# Aplicar abertura
-#img = abertura(l,a,it,elemento_estruturante)
-#salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, it)
-
 # Aplicar a dilatação
 #imagem_nova = dilatacao(l, a, it,elemento_estruturante)
-
-#imagem_dilatacao = dilatacao(l, a, it,elemento_estruturante)
-
-#Aplicar a erosão
-#imagem_erosao = erosao(l, a, it, elemento_estruturante)
-
-
-
-
+aplicar_negativo("ImagensTeste/lorem_s12_c02_noise.pbm",  "ImagensTeste/neg.pbm")
 # for i in range(10):
-#     print(f"{i+1}. iteração")
 #     l, a, it = ler_arquivo_pgm("ImagensTeste/escrever.pbm")
-#     img = abertura(l, a, it, elemento_estruturante)
+#     img = dilatacao(l, a, it, elemento_estruturante)
 #     salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, img)
 
 # Aplicar filtro da mediana
-#imagem_filtrada = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
-
+imagem_filtrada = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
+salvar_arquivo_pgm("ImagensTeste/imagem_filtrada.pbm", l, a, imagem_filtrada)
 # Salvar a nova imagem
 #salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, negativa)
 
-#salvar_arquivo_pgm("ImagensTeste/imagem_filtrada.pbm", l, a, imagem_filtrada)
+l, a, it = ler_arquivo_pgm("ImagensTeste/imagem_filtrada.pbm")
 
+imagem_dilatacao = dilatacao("ImagensTeste/imagem_filtrada.pbm",elemento_estruturante)
+imagem_erosao = erosao("ImagensTeste/imagem_filtrada.pbm", elemento_estruturante)
 
-#l, a, it = ler_arquivo_pgm("ImagensTeste/imagem_filtrada.pbm")
-
-#imagem_dilatacao = dilatacao(l, a, it,elemento_estruturante)
-#imagem_erosao = erosao(l, a, it, elemento_estruturante)
-
-#salvar_arquivo_pgm("ImagensTeste/imagem_dilatada.pbm", l, a, imagem_dilatacao)
-#salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, imagem_erosao)
+salvar_arquivo_pgm("ImagensTeste/imagem_dilatada.pbm", l, a, imagem_dilatacao)
+salvar_arquivo_pgm("ImagensTeste/imagem_erudita.pbm", l, a, imagem_erosao)
 
 #print(intensidade)
 #print(l)
