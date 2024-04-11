@@ -28,21 +28,21 @@ def ler_arquivo_pgm(nome_arquivo):
     return largura, altura, dados_intensidade
 
 
-#Você dá os dados e ele salva no arquivo
+# Você dá os dados e ele salva no arquivo
 def salvar_arquivo_pgm(nome_arquivo, largura, altura, dados_imagem):
     with open(nome_arquivo, 'w') as arquivo:
         arquivo.write('P1\n')
         arquivo.write(f"{largura} {altura}\n")
-        
+
         # Escreve os dados da imagem
         for i in range(0, len(dados_imagem), largura):
-            linha = " ".join(map(str, dados_imagem[i:i+largura]))
+            linha = " ".join(map(str, dados_imagem[i:i + largura]))
             arquivo.write(f"{linha}\n")
     print("Salva com sucesso")
 
 
 # Nova função pra criar matriz
-def lista_para_matriz(linhas,colunas,lista):
+def lista_para_matriz(linhas, colunas, lista):
     if linhas * colunas != len(lista):
         raise ValueError("Tamanho da lista nao deixa criar a matriz")
 
@@ -65,7 +65,7 @@ def cria_lista(matriz):
 
 
 # Pega os vizinhos do valor em matriz[i][j] (considerando máscara 3x3)
-def pega_vizinhos(matriz,i,j):
+def pega_vizinhos(matriz, i, j):
     mascara = [matriz[i][j], matriz[i + 1][j], matriz[i + 1][j + 1], matriz[i - 1][j], matriz[i - 1][j + 1],
                matriz[i - 1][j - 1], matriz[i][j + 1], matriz[i][j - 1], matriz[i + 1][j - 1]]
     return mascara
@@ -81,13 +81,13 @@ def pega_vizinhos(matriz,i,j):
 # 5. Ordena e pega o quarto elemento (mediana) e ja era
 def filtro_mediana(imagem):
     largura, altura, intensidade = ler_arquivo_pgm(imagem)
-    imagem_matriz = lista_para_matriz(altura,largura,intensidade)
-    imagem_matriz_filtrada = lista_para_matriz(altura,largura,intensidade)
+    imagem_matriz = lista_para_matriz(altura, largura, intensidade)
+    imagem_matriz_filtrada = lista_para_matriz(altura, largura, intensidade)
 
-    for i in range(1,altura-1):
-        for j in range(1,largura-1):
-            #print(f"{imagem_matriz[i][j]}: {i} {j}")
-            mascara = pega_vizinhos(imagem_matriz,i,j)
+    for i in range(1, altura - 1):
+        for j in range(1, largura - 1):
+            # print(f"{imagem_matriz[i][j]}: {i} {j}")
+            mascara = pega_vizinhos(imagem_matriz, i, j)
             mascara.sort()
             imagem_matriz_filtrada[i][j] = mascara[4]
 
@@ -95,12 +95,11 @@ def filtro_mediana(imagem):
     return imagem_matriz_filtrada
 
 
-def dilatacao(imagem, elemento_estruturante):
-    largura, altura, intensidade = ler_arquivo_pgm(imagem)
+def dilatacao(largura, altura, intensidade, elem):
     imagem_matriz = lista_para_matriz(altura, largura, intensidade)
     imagem_matriz_filtrada = lista_para_matriz(altura, largura, intensidade)
-    qtde_linhas_elemento = len(elemento_estruturante)
-    qtde_colunas_elemento = len(elemento_estruturante[0])
+    qtde_linhas_elemento = len(elem)
+    qtde_colunas_elemento = len(elem[0])
 
     # Loop pelos pixels da imagem, exceto a borda
     for i in range(1, altura - 1):
@@ -111,32 +110,32 @@ def dilatacao(imagem, elemento_estruturante):
                 for k in range(qtde_linhas_elemento):
                     for l in range(qtde_colunas_elemento):
                         # Atualiza os pixels na imagem filtrada com base no elemento estruturante
-                        if elemento_estruturante[k][l] == 1:
+                        if elem[k][l] == 1:
                             # Define o pixel correspondente na imagem filtrada como branco (valor 1)
                             imagem_matriz_filtrada[i - 1 + k][j - 1 + l] = 1
 
     imagem_matriz_filtrada = cria_lista(imagem_matriz_filtrada)
     return imagem_matriz_filtrada
 
-def erosao(imagem, elemento_estruturante):
-    largura, altura, intensidade = ler_arquivo_pgm(imagem)
+
+def erosao(largura, altura, intensidade, elem):
     imagem_matriz = lista_para_matriz(altura, largura, intensidade)
     imagem_matriz_filtrada = lista_para_matriz(altura, largura, intensidade)
-    qtde_linhas_elemento = len(elemento_estruturante)
-    qtde_colunas_elemento = len(elemento_estruturante[0])
+    qtde_linhas_elemento = len(elem)
+    qtde_colunas_elemento = len(elem[0])
 
-    #Loop pelos pixels da imagem, exceto a borda
+    # Loop pelos pixels da imagem, exceto a borda
     for i in range(1, altura - 1):
         for j in range(1, largura - 1):
-            #Se o pixel na imagem original estiver braco (valor 1)
+            # Se o pixel na imagem original estiver braco (valor 1)
             if imagem_matriz[i][j] == 1:
-                #Aplica erosão usando o elemento estruturante
+                # Aplica erosão usando o elemento estruturante
                 for k in range(qtde_linhas_elemento):
                     for l in range(qtde_colunas_elemento):
-                        #Verifica se o pixel do elemento estruturante corresponde a um pixel branco na imagem
-                        if elemento_estruturante[k][l] == 1 and imagem_matriz[i - 1 + k][j - 1 +l] != 1:
-                            #Se algum dos pixels do elemento estruturante não corresponder a um pixel branco na imagem,
-                            #o pixel na imagem filtrada é definido como preto (valor 0)
+                        # Verifica se o pixel do elemento estruturante corresponde a um pixel branco na imagem
+                        if elem[k][l] == 1 and imagem_matriz[i - 1 + k][j - 1 + l] != 1:
+                            # Se algum dos pixels do elemento estruturante não corresponder a um pixel branco na imagem,
+                            # o pixel na imagem filtrada é definido como preto (valor 0)
                             imagem_matriz_filtrada[i][j] = 0
                             break
                         else:
@@ -148,77 +147,85 @@ def erosao(imagem, elemento_estruturante):
 
 
 def abertura(largura, altura, intensidade, elem):
-    e = erosao(largura,altura,intensidade,elem)
-    r = dilatacao(largura,altura,e,elem)
+    e = erosao(largura, altura, intensidade, elem)
+    r = dilatacao(largura, altura, e, elem)
     return r
 
 
 def fechamento(largura, altura, intensidade, elem):
-    d = dilatacao(largura,altura,intensidade,elem)
-    r = erosao(largura,altura,d,elem)
+    d = dilatacao(largura, altura, intensidade, elem)
+    r = erosao(largura, altura, d, elem)
     return r
 
-def aplicar_negativo (nome_arquivo_entrada, nome_arquivo_saida):
-    largura, altura, dados_intensidade = ler_arquivo_pgm(nome_arquivo_entrada)
-    imagem_matriz = lista_para_matriz(altura,largura,dados_intensidade)
-    imagem_negativa = lista_para_matriz(altura,largura,dados_intensidade)
 
-    for i in range(1,altura-1):
-        for j in range(1,largura-1):
-            imagem_negativa[i][j] = 1-imagem_matriz[i][j]
+def aplicar_negativo(nome_arquivo_entrada, nome_arquivo_saida):
+    largura, altura, dados_intensidade = ler_arquivo_pgm(nome_arquivo_entrada)
+    imagem_matriz = lista_para_matriz(altura, largura, dados_intensidade)
+    imagem_negativa = lista_para_matriz(altura, largura, dados_intensidade)
+
+    for i in range(1, altura - 1):
+        for j in range(1, largura - 1):
+            imagem_negativa[i][j] = 1 - imagem_matriz[i][j]
     salvar_arquivo_pgm(nome_arquivo_saida, largura, altura, cria_lista(imagem_negativa))
 
 
-
-#l,a,intensidade = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
+# l,a, it = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
 l, a, it = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
-
-
 listaa = [0, 0, 0, 0, 1, 1, 0, 0, 0]
 elemento_estruturante = lista_para_matriz(3, 3, listaa)
-#print(elemento_estruturante)
+# print(elemento_estruturante)
+
+
+# Aplicar abertura
+img = fechamento(l,a,it,elemento_estruturante)
+salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, it)
 
 # Aplicar a dilatação
-#imagem_nova = dilatacao(l, a, it,elemento_estruturante)
-aplicar_negativo("ImagensTeste/lorem_s12_c02_noise.pbm",  "ImagensTeste/neg.pbm")
+# imagem_nova = dilatacao(l, a, it,elemento_estruturante)
+
+# imagem_dilatacao = dilatacao(l, a, it,elemento_estruturante)
+
+# Aplicar a erosão
+# imagem_erosao = erosao(l, a, it, elemento_estruturante)
+
+
 # for i in range(10):
+#     print(f"{i+1}. iteração")
 #     l, a, it = ler_arquivo_pgm("ImagensTeste/escrever.pbm")
-#     img = dilatacao(l, a, it, elemento_estruturante)
+#     img = abertura(l, a, it, elemento_estruturante)
 #     salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, img)
 
 # Aplicar filtro da mediana
-imagem_filtrada = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
-salvar_arquivo_pgm("ImagensTeste/imagem_filtrada.pbm", l, a, imagem_filtrada)
+# imagem_filtrada = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
+
 # Salvar a nova imagem
-#salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, negativa)
+# salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, negativa)
 
-l, a, it = ler_arquivo_pgm("ImagensTeste/imagem_filtrada.pbm")
+# salvar_arquivo_pgm("ImagensTeste/imagem_filtrada.pbm", l, a, imagem_filtrada)
 
-imagem_dilatacao = dilatacao("ImagensTeste/imagem_filtrada.pbm",elemento_estruturante)
-imagem_erosao = erosao("ImagensTeste/imagem_filtrada.pbm", elemento_estruturante)
 
-salvar_arquivo_pgm("ImagensTeste/imagem_dilatada.pbm", l, a, imagem_dilatacao)
-salvar_arquivo_pgm("ImagensTeste/imagem_erudita.pbm", l, a, imagem_erosao)
+# l, a, it = ler_arquivo_pgm("ImagensTeste/imagem_filtrada.pbm")
 
-#print(intensidade)
-#print(l)
-#print(a)
+# imagem_dilatacao = dilatacao(l, a, it,elemento_estruturante)
+# imagem_erosao = erosao(l, a, it, elemento_estruturante)
+
+# salvar_arquivo_pgm("ImagensTeste/imagem_dilatada.pbm", l, a, imagem_dilatacao)
+# salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, imagem_erosao)
+
+# print(intensidade)
+# print(l)
+# print(a)
 # lorem_s12_c02_just.pbm, lorem_s12_c02_espacos_noise.pbm
 
-#print(f"Largura: {l}")
-#print(f"Altura: {a}")
-#print(f"Valor Máximo de Intensidade: {valor_maximo}")
-#print(f"Dados de Intensidade: {intensidade}")
-#print(type(intensidade))
-
-
-
-
-
+# print(f"Largura: {l}")
+# print(f"Altura: {a}")
+# print(f"Valor Máximo de Intensidade: {valor_maximo}")
+# print(f"Dados de Intensidade: {intensidade}")
+# print(type(intensidade))
 
 
 # Exemplo de uso
-#nome_arquivo_entrada = 'Figuras/lago_escuro.pgm'
+# nome_arquivo_entrada = 'Figuras/lago_escuro.pgm'
 
 # Lê a imagem do arquivo de entrada
-#largura, altura, valor_maximo, dados_imagem = ler_arquivo_pgm(nome_arquivo_entrada)
+# largura, altura, valor_maximo, dados_imagem = ler_arquivo_pgm(nome_arquivo_entrada)
