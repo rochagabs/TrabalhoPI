@@ -117,6 +117,32 @@ def dilatacao(largura, altura, intensidade, elemento_estruturante):
     imagem_matriz_filtrada = cria_lista(imagem_matriz_filtrada)
     return imagem_matriz_filtrada
 
+def erosao(largura, altura, intensidade, elemento_estruturante):
+    imagem_matriz = lista_para_matriz(altura, largura, intensidade)
+    imagem_matriz_filtrada = lista_para_matriz(altura, largura, intensidade)
+    qtde_linhas_elemento = len(elemento_estruturante)
+    qtde_colunas_elemento = len(elemento_estruturante[0])
+
+    #Loop pelos pixels da imagem, exceto a borda
+    for i in range(1, altura - 1):
+        for j in range(1, largura - 1):
+            #Se o pixel na imagem original estiver braco (valor 1)
+            if imagem_matriz[i][j] == 1:
+                #Aplica erosão usando o elemento estruturante
+                for k in range(qtde_linhas_elemento):
+                    for l in range(qtde_colunas_elemento):
+                        #Verifica se o pixel do elemento estruturante corresponde a um pixel branco na imagem
+                        if elemento_estruturante[k][l] == 1 and imagem_matriz[i - 1 + k][j - 1 +l] != 1:
+                            #Se algum dos pixels do elemento estruturante não corresponder a um pixel branco na imagem,
+                            #o pixel na imagem filtrada é definido como preto (valor 0)
+                            imagem_matriz_filtrada[i][j] = 0
+                            break
+                        else:
+                            continue
+                        break
+
+    imagem_matriz_filtrada = cria_lista(imagem_matriz_filtrada)
+    return imagem_matriz_filtrada
 
 
 def aplicar_negativo (nome_arquivo_entrada, nome_arquivo_saida):
@@ -140,21 +166,38 @@ elemento_estruturante = lista_para_matriz(3, 3, listaa)
 #print(elemento_estruturante)
 
 # Aplicar a dilatação
+<<<<<<< Updated upstream
 #imagem_nova = dilatacao(l, a, it,elemento_estruturante)
 aplicar_negativo("ImagensTeste/lorem_s12_c02_noise.pbm",  "ImagensTeste/neg.pbm")
+=======
+#imagem_dilatacao = dilatacao(l, a, it,elemento_estruturante)
+
+#Aplicar a erosão
+#imagem_erosao = erosao(l, a, it, elemento_estruturante)
+
+>>>>>>> Stashed changes
 # for i in range(10):
 #     l, a, it = ler_arquivo_pgm("ImagensTeste/escrever.pbm")
 #     img = dilatacao(l, a, it, elemento_estruturante)
 #     salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, img)
 
 # Aplicar filtro da mediana
-#imagem_nova = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
+imagem_filtrada = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
 
 # Salvar a nova imagem
+<<<<<<< Updated upstream
 #salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, negativa)
+=======
+salvar_arquivo_pgm("ImagensTeste/imagem_filtrada.pbm", l, a, imagem_filtrada)
+>>>>>>> Stashed changes
 
+l, a, it = ler_arquivo_pgm("ImagensTeste/imagem_filtrada.pbm")
 
+imagem_dilatacao = dilatacao(l, a, it,elemento_estruturante)
+imagem_erosao = erosao(l, a, it, elemento_estruturante)
 
+salvar_arquivo_pgm("ImagensTeste/imagem_dilatada.pbm", l, a, imagem_dilatacao)
+salvar_arquivo_pgm("ImagensTeste/imagem_erudita.pbm", l, a, imagem_erosao)
 
 #print(intensidade)
 #print(l)
