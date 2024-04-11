@@ -30,7 +30,7 @@ def ler_arquivo_pgm(nome_arquivo):
     return largura, altura, dados_intensidade
 
 
-#vc da os dados e ele salvo no arquivo
+#Você dá os dados e ele salva no arquivo
 def salvar_arquivo_pgm(nome_arquivo, largura, altura, dados_imagem):
     with open(nome_arquivo, 'w') as arquivo:
         arquivo.write('P1\n')
