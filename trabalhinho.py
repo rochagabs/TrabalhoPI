@@ -46,22 +46,52 @@ def salvar_arquivo_pgm(nome_arquivo, largura, altura, dados_imagem):
 
 
 # Função pra transformar uma lista em uma matriz
+# Função pra transformar uma lista em uma matriz
+# def cria_matriz(linhas, colunas, lista):
+#     matriz = []
+#     for i in range(linhas):
+#         lista_linhas = []
+#         for j in range(colunas):
+#             #print(i,j)
+#             lista_linhas.append(lista[colunas * i + j])
+#         matriz.append(lista_linhas)
+#     return matriz
+
+
+# Nova função pra criar matriz
+def lista_para_matriz(linhas,colunas,lista):
+    if linhas * colunas != len(lista):
+        raise ValueError("Tamanho da lista nao deixa criar a matriz")
+
+    matriz = []
+    for i in range(linhas):
+        linha = []
+        for j in range(colunas):
+            indice = i * colunas + j
+            elemento = lista[indice]
+            linha.append(elemento)
+        matriz.append(linha)
+
+    return matriz
+
+
 def cria_matriz(linhas, colunas, lista):
     matriz = []
     idx = 0
     for i in range(linhas):
         lista_linhas = []
         for j in range(colunas):
+            #print(i,j)
+            lista_linhas.append(lista[colunas * i + j])
             # Verifica se ainda há elementos na lista
             if idx < len(lista):
-                lista_linhas.append(lista[idx])
+                #lista_linhas.append(lista[idx])
                 idx += 1
             else:
                 # Se a lista terminar antes da matriz, preenche com zero
                 lista_linhas.append(0)
         matriz.append(lista_linhas)
     return matriz
-
 
 # Função pra transformar uma matriz em uma lista
 def cria_lista(matriz):
@@ -85,8 +115,8 @@ def pega_vizinhos(matriz,i,j):
 # 5. Ordena e pega o quarto elemento (mediana) e ja era
 def filtro_mediana(imagem):
     largura, altura, intensidade = ler_arquivo_pgm(imagem)
-    imagem_matriz = cria_matriz(altura,largura,intensidade)
-    imagem_matriz_filtrada = cria_matriz(altura,largura,intensidade)
+    imagem_matriz = lista_para_matriz(altura,largura,intensidade)
+    imagem_matriz_filtrada = lista_para_matriz(altura,largura,intensidade)
 
     for i in range(1,altura-1):
         for j in range(1,largura-1):
@@ -99,10 +129,9 @@ def filtro_mediana(imagem):
     return imagem_matriz_filtrada
 
 
-
 def dilatacao(largura, altura, intensidade, elemento_estruturante):
-    imagem_matriz = cria_matriz(altura, largura, intensidade)
-    imagem_matriz_filtrada = cria_matriz(altura, largura, intensidade)
+    imagem_matriz = lista_para_matriz(altura, largura, intensidade)
+    imagem_matriz_filtrada = lista_para_matriz(altura, largura, intensidade)
     qtde_linhas_elemento = len(elemento_estruturante)
     qtde_colunas_elemento = len(elemento_estruturante[0])
 
@@ -125,16 +154,26 @@ def dilatacao(largura, altura, intensidade, elemento_estruturante):
 
 
 #l,a,intensidade = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
-largura, altura, intensidade = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
+l, a, it = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
 
-lista = [0, 0, 0, 0, 1, 1, 0, 0, 0]
-elemento_estruturante = cria_matriz(3, 3, lista)
+
+listaa = [0, 0, 0, 0, 1, 1, 0, 0, 0]
+elemento_estruturante = lista_para_matriz(3, 3, listaa)
+print(elemento_estruturante)
 
 # Aplicar a dilatação
-imagem_nova = dilatacao(largura, altura, cria_matriz(altura, largura, intensidade),elemento_estruturante)
+imagem_nova = dilatacao(l, a, it,elemento_estruturante)
+
+# for i in range(10):
+#     l, a, it = ler_arquivo_pgm("ImagensTeste/escrever.pbm")
+#     img = dilatacao(l, a, it, elemento_estruturante)
+#     salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, img)
+
+# Aplicar filtro da mediana
+#imagem_nova = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
 
 # Salvar a nova imagem
-salvar_arquivo_pgm("ImagensTeste/escrever.pbm", largura, altura, imagem_nova)
+salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, imagem_nova)
 
 
 
@@ -143,7 +182,7 @@ salvar_arquivo_pgm("ImagensTeste/escrever.pbm", largura, altura, imagem_nova)
 #print(l)
 #print(a)
 # lorem_s12_c02_just.pbm, lorem_s12_c02_espacos_noise.pbm
-#imagem_nova = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
+
 #print(f"Largura: {l}")
 #print(f"Altura: {a}")
 #print(f"Valor Máximo de Intensidade: {valor_maximo}")
