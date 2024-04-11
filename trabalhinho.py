@@ -147,6 +147,17 @@ def erosao(imagem, elemento_estruturante):
     return imagem_matriz_filtrada
 
 
+def abertura(largura, altura, intensidade, elem):
+    e = erosao(largura,altura,intensidade,elem)
+    r = dilatacao(largura,altura,e,elem)
+    return r
+
+
+def fechamento(largura, altura, intensidade, elem):
+    d = dilatacao(largura,altura,intensidade,elem)
+    r = erosao(largura,altura,d,elem)
+    return r
+
 def aplicar_negativo (nome_arquivo_entrada, nome_arquivo_saida):
     largura, altura, dados_intensidade = ler_arquivo_pgm(nome_arquivo_entrada)
     imagem_matriz = lista_para_matriz(altura,largura,dados_intensidade)
