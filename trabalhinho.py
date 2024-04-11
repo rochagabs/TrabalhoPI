@@ -128,30 +128,78 @@ def aplicar_negativo (nome_arquivo_entrada, nome_arquivo_saida):
         for j in range(1,largura-1):
             imagem_negativa[i][j] = 1-imagem_matriz[i][j]
     salvar_arquivo_pgm(nome_arquivo_saida, largura, altura, cria_lista(imagem_negativa))
+    
+# Calcula o valor do pixel dada uma máscara
+def calcula_pixel(vizinhos, mascara):
+    resultado = 0
+    
+    for i in range(3):
+        for j in range(3):
+            resultado += vizinhos[i][j] * mascara[i][j]
+            
+    if resultado < 0: return 0
+    if resultado > 1: return 1
+    return resultado
 
+"""
+Aplica o filtro Sobel somando os pixels de Sobel X e Sobel Y 
+numa imagem final
+"""
+def sobel(imagem):
+    
+    Gx = [
+            [-1, 0, 1],
+            [-2, 0, 2],
+            [-1, 0, 1]
+        ]
+    
+    Gy = [
+            [ 1,  2,  1],
+            [ 0,  0,  0],
+            [-1, -2, -1],
+        ]
+    
+    largura, altura, intensidade = ler_arquivo_pgm(imagem)
+    imagem_matriz = lista_para_matriz(altura, largura, intensidade)
+    nova_imagem_matriz = [[0 for _ in range(largura)] for _ in range(altura)]
+    
+    for i in range(1, altura - 1):
+        for j in range(1, largura - 1):
+            vizinhos = lista_para_matriz(3, 3, pega_vizinhos(imagem_matriz, i, j))
+            pixel_sobel_x = calcula_pixel(vizinhos, Gx)
+            pixel_sobel_y = calcula_pixel(vizinhos, Gy)
+            nova_imagem_matriz[i][j] = pixel_sobel_x or pixel_sobel_y
+            
+    return cria_lista(nova_imagem_matriz)    
+     
 
 
 #l,a,intensidade = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
-l, a, it = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
+l, a, it = ler_arquivo_pgm("imagens-salvas/imagem-suavizada.pbm")
 
 
-listaa = [0, 0, 0, 0, 1, 1, 0, 0, 0]
+""" listaa = [0, 0, 0, 0, 1, 1, 0, 0, 0]
 elemento_estruturante = lista_para_matriz(3, 3, listaa)
-#print(elemento_estruturante)
+print(elemento_estruturante) """
 
 # Aplicar a dilatação
-#imagem_nova = dilatacao(l, a, it,elemento_estruturante)
-aplicar_negativo("ImagensTeste/lorem_s12_c02_noise.pbm",  "ImagensTeste/neg.pbm")
+# imagem_nova = dilatacao(l, a, it,elemento_estruturante)
+
 # for i in range(10):
 #     l, a, it = ler_arquivo_pgm("ImagensTeste/escrever.pbm")
 #     img = dilatacao(l, a, it, elemento_estruturante)
 #     salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, img)
 
 # Aplicar filtro da mediana
-#imagem_nova = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
+# imagem_nova = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
+# salvar_arquivo_pgm("imagens-salvas/imagem-suavizada.pbm", l, a, imagem_nova)
 
 # Salvar a nova imagem
-#salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, negativa)
+# salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, imagem_nova)
+
+# Aplicar sobel X
+imagem_nova = sobel("imagens-salvas/imagem-suavizada.pbm")
+salvar_arquivo_pgm("imagens-salvas/sobel-final.pbm", l, a, imagem_nova)
 
 
 
