@@ -257,21 +257,43 @@ def soma_imagem(imagem1, imagem2, imagem_final):
 def imagem_terminada(imagem_entrada, imagem_saida, elem):
     largura, altura, intensidade = ler_arquivo_pgm(imagem_entrada)
     intensidade = filtro_mediana(largura, altura, intensidade)
-    for i in range(7):
-        print(f"{i + 1}. iteração")
-        img = dilatacao(largura, altura, intensidade, elem)
-        intensidade = img
-    img = abertura(largura, altura, img, elem)
-    img = filtro_mediana(largura, altura, img)
-    com_sobel = sobel(largura, altura, img)
-    # aplicar_negativo(largura, altura, com_sobel, imagem_saida)
-    salvar_arquivo_pgm(imagem_saida, largura, altura, aplicar_negativo(largura, altura, com_sobel))
+    # for i in range(1):
+    #     print(f"{i + 1}. iteração")
+    #     img = dilatacao(largura, altura, intensidade, elem)
+    #     intensidade = img
+    # img = abertura(largura, altura, img, elem)
+    img = filtro_mediana(largura, altura, intensidade)
+    #com_sobel = sobel(largura, altura, img)
+    #aplicar_negativo(largura, altura, com_sobel, imagem_saida)
+    salvar_arquivo_pgm(imagem_saida, largura, altura, img)
 
+def contar_linhas_texto(imagem):
+    largura, altura, intensidade = ler_arquivo_pgm(imagem) 
+    imagem_matriz = lista_para_matriz(altura, largura, intensidade)
+    contador = 0
+    linha_anterior_texto = False
+
+    for i in range(1, altura - 1):
+        linha = imagem_matriz[i]
+        for j in range(1, largura - 1):
+            pixel = linha[j]
+            if pixel == 1:   # Verifica se há pelo menos um pixel de texto na linha
+                if not linha_anterior_texto:  # Se a linha anterior não tinha texto e a linha atual tem, incrementa o contador
+                    contador += 1
+                linha_anterior_texto = True
+                break  # Avança para a próxima linha
+        else:
+            linha_anterior_texto = False
+
+    return contador
 
 listaa = [0, 0, 0, 1, 1, 1, 0, 0, 0]
 lista2 = [1,1,1,1,1,1]
 elemento_estruturante = lista_para_matriz(2, 3, lista2)
-imagem_terminada("ImagensTeste/lorem_s12_c02_noise.pbm", "ImagensTeste/escrever.pbm", elemento_estruturante)
+imagem_terminada("ImagensTeste/lorem_s12_c03_noise.pbm", "ImagensTeste/escrever.pbm", elemento_estruturante)
+
+total_linhas = contar_linhas_texto("ImagensTeste/escrever.pbm")
+print(total_linhas)
 
 # Aplicar abertura
 # img = fechamento(l,a,it,elemento_estruturante)
