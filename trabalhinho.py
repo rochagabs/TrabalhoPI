@@ -70,15 +70,7 @@ def pega_vizinhos(matriz, i, j):
                matriz[i - 1][j - 1], matriz[i][j + 1], matriz[i][j - 1], matriz[i + 1][j - 1]]
     return mascara
 
-
-# Aplica o filtro da mediana
-
-# O filtro tá funcionando assim:
-# 1. Lê a imagem que você quer aplicar o filtro
-# 2. Cria uma matriz a partir do valor de "intensidade" encontrado na imagem
-# 3. Cria uma matriz pra guardar os novos valores depois do filtro
-# 4. Começa o loop em i = 1, j = 1 pegando os vizinhos
-# 5. Ordena e pega o quarto elemento (mediana) e ja era
+# Filtro da mediana
 def filtro_mediana(largura, altura, intensidade):
     imagem_matriz = lista_para_matriz(altura, largura, intensidade)
     imagem_matriz_filtrada = lista_para_matriz(altura, largura, intensidade)
@@ -99,18 +91,12 @@ def dilatacao(largura, altura, intensidade, elem):
     imagem_matriz_filtrada = lista_para_matriz(altura, largura, intensidade)
     qtde_linhas_elemento = len(elem)
     qtde_colunas_elemento = len(elem[0])
-
-    # Loop pelos pixels da imagem, exceto a borda
     for i in range(1, altura - 1):
         for j in range(1, largura - 1):
-            # Se o pixel na imagem original estiver branco (valor 1)
             if imagem_matriz[i][j] == 1:
-                # Aplica a dilatação usando o elemento estruturante
                 for k in range(qtde_linhas_elemento):
                     for l in range(qtde_colunas_elemento):
-                        # Atualiza os pixels na imagem filtrada com base no elemento estruturante
                         if elem[k][l] == 1:
-                            # Define o pixel correspondente na imagem filtrada como branco (valor 1)
                             imagem_matriz_filtrada[i - 1 + k][j - 1 + l] = 1
 
     imagem_matriz_filtrada = cria_lista(imagem_matriz_filtrada)
@@ -122,19 +108,12 @@ def erosao(largura, altura, intensidade, elem):
     imagem_matriz_filtrada = lista_para_matriz(altura, largura, intensidade)
     qtde_linhas_elemento = len(elem)
     qtde_colunas_elemento = len(elem[0])
-
-    # Loop pelos pixels da imagem, exceto a borda
     for i in range(1, altura - 1):
         for j in range(1, largura - 1):
-            # Se o pixel na imagem original estiver braco (valor 1)
             if imagem_matriz[i][j] == 1:
-                # Aplica erosão usando o elemento estruturante
                 for k in range(qtde_linhas_elemento):
                     for l in range(qtde_colunas_elemento):
-                        # Verifica se o pixel do elemento estruturante corresponde a um pixel branco na imagem
                         if elem[k][l] == 1 and imagem_matriz[i - 1 + k][j - 1 + l] != 1:
-                            # Se algum dos pixels do elemento estruturante não corresponder a um pixel branco na imagem,
-                            # o pixel na imagem filtrada é definido como preto (valor 0)
                             imagem_matriz_filtrada[i][j] = 0
                             break
                         else:
@@ -165,7 +144,6 @@ def aplicar_negativo(largura, altura, dados_intensidade):
         for j in range(1, largura - 1):
             imagem_negativa[i][j] = 1 - imagem_matriz[i][j]
     return cria_lista(imagem_negativa)
-    # salvar_arquivo_pgm(nome_arquivo_saida, largura, altura, cria_lista(imagem_negativa))
 
 
 # Calcula o valor do pixel dada uma máscara 3x3
@@ -179,12 +157,6 @@ def calcula_pixel(vizinhos, mascara):
     if resultado < 0: return 0
     if resultado > 1: return 1
     return resultado
-
-
-"""
-Aplica o filtro Sobel somando os pixels de Sobel X e Sobel Y 
-numa imagem final
-"""
 
 
 def sobel(largura, altura, intensidade):
@@ -221,27 +193,6 @@ def verifica_elemento(imagem, i, j, elemento):
     return True
 
 
-# Função para contar palavras na imagem usando a transformada Hit or Miss
-def contar_palavras(imagem, largura, altura):
-    elemento_hit = [[1, 1], [0, 1]]  # Elemento estruturante para o início da palavra
-    elemento_miss = [[0, 0], [1, 0]]  # Elemento estruturante para o fim da palavra
-
-    imagem_matriz = lista_para_matriz(altura, largura, imagem)
-    qtd_palavras = 0
-
-    # Loop pela imagem
-    for i in range(altura - 1):
-        for j in range(largura - 1):
-            # Verifica se o elemento Hit bate com a vizinhança
-            if i < altura - 1 and j < largura - 1:
-                if verifica_elemento(imagem_matriz, i, j, elemento_hit):
-                    # Verifica se o elemento Miss bate com a vizinhança
-                    if verifica_elemento(imagem_matriz, i, j + 1, elemento_miss):
-                        qtd_palavras += 1
-
-    return qtd_palavras
-
-
 def soma_imagem(imagem1, imagem2, imagem_final):
     largura1, altura1, dados_intensidade1 = ler_arquivo_pgm(imagem1)
     imagem_matriz1 = lista_para_matriz(altura1, largura1, dados_intensidade1)
@@ -267,6 +218,7 @@ def imagem_terminada(imagem_entrada, imagem_saida, elem):
     #aplicar_negativo(largura, altura, com_sobel, imagem_saida)
     salvar_arquivo_pgm(imagem_saida, largura, altura, img)
 
+
 def contar_linhas_texto(imagem):
     largura, altura, intensidade = ler_arquivo_pgm(imagem) 
     imagem_matriz = lista_para_matriz(altura, largura, intensidade)
@@ -277,11 +229,11 @@ def contar_linhas_texto(imagem):
         linha = imagem_matriz[i]
         for j in range(1, largura - 1):
             pixel = linha[j]
-            if pixel == 1:   # Verifica se há pelo menos um pixel de texto na linha
-                if not linha_anterior_texto:  # Se a linha anterior não tinha texto e a linha atual tem, incrementa o contador
+            if pixel == 1:
+                if not linha_anterior_texto:
                     contador += 1
                 linha_anterior_texto = True
-                break  # Avança para a próxima linha
+                break
         else:
             linha_anterior_texto = False
 
