@@ -241,7 +241,14 @@ def contar_linhas_texto(imagem):
 
 lista2 = [1,1,1,1,1,1]
 elemento_estruturante = lista_para_matriz(2, 3, lista2)
-imagem_terminada("ImagensTeste/texto4.pbm", "ImagensTeste/escrever.pbm", elemento_estruturante)
-total_linhas = contar_linhas_texto("ImagensTeste/escrever.pbm")
+imagem_terminada("ImagensTeste/texto1.pbm", "imagens-salvas/grupo_06_imagem_1_linhas_31_palavras_363.pbm", elemento_estruturante)
+total_linhas = contar_linhas_texto("Imagens-salvas/grupo_06_imagem_1_linhas_31_palavras_363.pbm")
 print(total_linhas)
+# imagem_terminada("ImagensTeste/texto2.pbm", "imagens-salvas/grupo_06_imagem_2_linhas_25_palavras_269.pbm", elemento_estruturante)
+# total_linhas = contar_linhas_texto("Imagens-salvas/grupo_06_imagem_2_linhas_25_palavras_269.pbm")
+# print(total_linhas)
+# imagem_terminada("ImagensTeste/texto3.pbm", "imagens-salvas/grupo_06_imagem_3_linhas_16_palavras_198.pbm", elemento_estruturante)
+# total_linhas = contar_linhas_texto("Imagens-salvas/grupo_06_imagem_3_linhas_16_palavras_198.pbm")
+# print(total_linhas)
+
 
