@@ -165,52 +165,51 @@ def aplicar_negativo(largura, altura, dados_intensidade):
         for j in range(1, largura - 1):
             imagem_negativa[i][j] = 1 - imagem_matriz[i][j]
     return cria_lista(imagem_negativa)
-    #salvar_arquivo_pgm(nome_arquivo_saida, largura, altura, cria_lista(imagem_negativa))
-    
+    # salvar_arquivo_pgm(nome_arquivo_saida, largura, altura, cria_lista(imagem_negativa))
+
+
 # Calcula o valor do pixel dada uma máscara 3x3
 def calcula_pixel(vizinhos, mascara):
     resultado = 0
-    
+
     for i in range(3):
         for j in range(3):
             resultado += vizinhos[i][j] * mascara[i][j]
-            
+
     if resultado < 0: return 0
     if resultado > 1: return 1
     return resultado
+
 
 """
 Aplica o filtro Sobel somando os pixels de Sobel X e Sobel Y 
 numa imagem final
 """
+
+
 def sobel(largura, altura, intensidade):
-    
     Gx = [
-            [-1, 0, 1],
-            [-2, 0, 2],
-            [-1, 0, 1]
-        ]
-    
+        [-1, 0, 1],
+        [-2, 0, 2],
+        [-1, 0, 1]
+    ]
+
     Gy = [
-            [ 1,  2,  1],
-            [ 0,  0,  0],
-            [-1, -2, -1],
-        ]
-    
+        [1, 2, 1],
+        [0, 0, 0],
+        [-1, -2, -1],
+    ]
+
     imagem_matriz = lista_para_matriz(altura, largura, intensidade)
     nova_imagem_matriz = [[0 for _ in range(largura)] for _ in range(altura)]
-    
+
     for i in range(1, altura - 1):
         for j in range(1, largura - 1):
             vizinhos = lista_para_matriz(3, 3, pega_vizinhos(imagem_matriz, i, j))
             pixel_sobel_x = calcula_pixel(vizinhos, Gx)
             pixel_sobel_y = calcula_pixel(vizinhos, Gy)
             nova_imagem_matriz[i][j] = pixel_sobel_x or pixel_sobel_y
-    return cria_lista(nova_imagem_matriz)    
-     
-
-
-
+    return cria_lista(nova_imagem_matriz)
 
 
 # Função para verificar se um elemento estruturante bate com a vizinhança
@@ -255,39 +254,30 @@ def soma_imagem(imagem1, imagem2, imagem_final):
     salvar_arquivo_pgm(imagem_final, largura1, altura1, cria_lista(imagem_final_matriz))
 
 
-def imagem_terminada(imagem_entrada, imagem_saida, elemento_estruturante):
+def imagem_terminada(imagem_entrada, imagem_saida, elem):
     largura, altura, intensidade = ler_arquivo_pgm(imagem_entrada)
-    intensidade = filtro_mediana(largura, altura, filtro_mediana(largura, altura, intensidade))
-    for i in range(6):
-     print(f"{i+1}. iteração")
-     img = dilatacao(largura, altura, intensidade, elemento_estruturante)
-     intensidade = img
-    img = abertura(largura, altura, img, elemento_estruturante)
+    intensidade = filtro_mediana(largura, altura, intensidade)
+    for i in range(7):
+        print(f"{i + 1}. iteração")
+        img = dilatacao(largura, altura, intensidade, elem)
+        intensidade = img
+    img = abertura(largura, altura, img, elem)
+    img = filtro_mediana(largura, altura, img)
     com_sobel = sobel(largura, altura, img)
-    #aplicar_negativo(largura, altura, com_sobel, imagem_saida)
+    # aplicar_negativo(largura, altura, com_sobel, imagem_saida)
     salvar_arquivo_pgm(imagem_saida, largura, altura, aplicar_negativo(largura, altura, com_sobel))
 
 
-
-
-
-
-
-
 listaa = [0, 0, 0, 1, 1, 1, 0, 0, 0]
-elemento_estruturante = lista_para_matriz(3, 3, listaa)
-imagem_terminada("ImagensTeste/lorem_s12_c02_noise.pbm", "imagens-salvas/final.pbm", elemento_estruturante)
-
-
-
-
-
+lista2 = [1,1,1,1,1,1]
+elemento_estruturante = lista_para_matriz(2, 3, lista2)
+imagem_terminada("ImagensTeste/lorem_s12_c02_noise.pbm", "ImagensTeste/escrever.pbm", elemento_estruturante)
 
 # Aplicar abertura
-#img = fechamento(l,a,it,elemento_estruturante)
-#salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, it)
+# img = fechamento(l,a,it,elemento_estruturante)
+# salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, it)
 # l,a, it = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
-#l, a, it = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
+# l, a, it = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
 # Aplicar a dilatação
 # imagem_nova = dilatacao(l, a, it,elemento_estruturante)
 
@@ -324,4 +314,3 @@ imagem_terminada("ImagensTeste/lorem_s12_c02_noise.pbm", "imagens-salvas/final.p
 # print(l)
 # print(a)
 # lorem_s12_c02_just.pbm, lorem_s12_c02_espacos_noise.pbm
-
