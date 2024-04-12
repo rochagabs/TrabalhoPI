@@ -79,8 +79,7 @@ def pega_vizinhos(matriz, i, j):
 # 3. Cria uma matriz pra guardar os novos valores depois do filtro
 # 4. Começa o loop em i = 1, j = 1 pegando os vizinhos
 # 5. Ordena e pega o quarto elemento (mediana) e ja era
-def filtro_mediana(imagem):
-    largura, altura, intensidade = ler_arquivo_pgm(imagem)
+def filtro_mediana(largura, altura, intensidade):
     imagem_matriz = lista_para_matriz(altura, largura, intensidade)
     imagem_matriz_filtrada = lista_para_matriz(altura, largura, intensidade)
 
@@ -158,17 +157,17 @@ def fechamento(largura, altura, intensidade, elem):
     return r
 
 
-def aplicar_negativo(nome_arquivo_entrada, nome_arquivo_saida):
-    largura, altura, dados_intensidade = ler_arquivo_pgm(nome_arquivo_entrada)
+def aplicar_negativo(largura, altura, dados_intensidade):
     imagem_matriz = lista_para_matriz(altura, largura, dados_intensidade)
     imagem_negativa = lista_para_matriz(altura, largura, dados_intensidade)
 
     for i in range(1, altura - 1):
         for j in range(1, largura - 1):
             imagem_negativa[i][j] = 1 - imagem_matriz[i][j]
-    salvar_arquivo_pgm(nome_arquivo_saida, largura, altura, cria_lista(imagem_negativa))
+    return cria_lista(imagem_negativa)
+    #salvar_arquivo_pgm(nome_arquivo_saida, largura, altura, cria_lista(imagem_negativa))
     
-# Calcula o valor do pixel dada uma máscara
+# Calcula o valor do pixel dada uma máscara 3x3
 def calcula_pixel(vizinhos, mascara):
     resultado = 0
     
@@ -184,7 +183,7 @@ def calcula_pixel(vizinhos, mascara):
 Aplica o filtro Sobel somando os pixels de Sobel X e Sobel Y 
 numa imagem final
 """
-def sobel(imagem):
+def sobel(largura, altura, intensidade):
     
     Gx = [
             [-1, 0, 1],
@@ -198,7 +197,6 @@ def sobel(imagem):
             [-1, -2, -1],
         ]
     
-    largura, altura, intensidade = ler_arquivo_pgm(imagem)
     imagem_matriz = lista_para_matriz(altura, largura, intensidade)
     nova_imagem_matriz = [[0 for _ in range(largura)] for _ in range(altura)]
     
@@ -208,21 +206,88 @@ def sobel(imagem):
             pixel_sobel_x = calcula_pixel(vizinhos, Gx)
             pixel_sobel_y = calcula_pixel(vizinhos, Gy)
             nova_imagem_matriz[i][j] = pixel_sobel_x or pixel_sobel_y
-            
     return cria_lista(nova_imagem_matriz)    
      
 
-# l,a, it = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
-l, a, it = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
-listaa = [0, 0, 0, 0, 1, 1, 0, 0, 0]
+
+
+
+
+# Função para verificar se um elemento estruturante bate com a vizinhança
+def verifica_elemento(imagem, i, j, elemento):
+    for k in range(len(elemento)):
+        for l in range(len(elemento[0])):
+            if elemento[k][l] != imagem[i + k][j + l]:
+                return False
+    return True
+
+
+# Função para contar palavras na imagem usando a transformada Hit or Miss
+def contar_palavras(imagem, largura, altura):
+    elemento_hit = [[1, 1], [0, 1]]  # Elemento estruturante para o início da palavra
+    elemento_miss = [[0, 0], [1, 0]]  # Elemento estruturante para o fim da palavra
+
+    imagem_matriz = lista_para_matriz(altura, largura, imagem)
+    qtd_palavras = 0
+
+    # Loop pela imagem
+    for i in range(altura - 1):
+        for j in range(largura - 1):
+            # Verifica se o elemento Hit bate com a vizinhança
+            if i < altura - 1 and j < largura - 1:
+                if verifica_elemento(imagem_matriz, i, j, elemento_hit):
+                    # Verifica se o elemento Miss bate com a vizinhança
+                    if verifica_elemento(imagem_matriz, i, j + 1, elemento_miss):
+                        qtd_palavras += 1
+
+    return qtd_palavras
+
+
+def soma_imagem(imagem1, imagem2, imagem_final):
+    largura1, altura1, dados_intensidade1 = ler_arquivo_pgm(imagem1)
+    imagem_matriz1 = lista_para_matriz(altura1, largura1, dados_intensidade1)
+    largura2, altura2, dados_intensidade2 = ler_arquivo_pgm(imagem2)
+    imagem_matriz2 = lista_para_matriz(altura2, largura2, dados_intensidade2)
+    imagem_final_matriz = lista_para_matriz(altura1, largura1, dados_intensidade1)
+    for i in range(1, altura1 - 1):
+        for j in range(1, largura1 - 1):
+            imagem_final_matriz[i][j] = imagem_matriz1[i][j] or imagem_matriz2[i][j]
+    salvar_arquivo_pgm(imagem_final, largura1, altura1, cria_lista(imagem_final_matriz))
+
+
+def imagem_terminada(imagem_entrada, imagem_saida, elemento_estruturante):
+    largura, altura, intensidade = ler_arquivo_pgm(imagem_entrada)
+    intensidade = filtro_mediana(largura, altura, filtro_mediana(largura, altura, intensidade))
+    for i in range(6):
+     print(f"{i+1}. iteração")
+     img = dilatacao(largura, altura, intensidade, elemento_estruturante)
+     intensidade = img
+    img = abertura(largura, altura, img, elemento_estruturante)
+    com_sobel = sobel(largura, altura, img)
+    #aplicar_negativo(largura, altura, com_sobel, imagem_saida)
+    salvar_arquivo_pgm(imagem_saida, largura, altura, aplicar_negativo(largura, altura, com_sobel))
+
+
+
+
+
+
+
+
+listaa = [0, 0, 0, 1, 1, 1, 0, 0, 0]
 elemento_estruturante = lista_para_matriz(3, 3, listaa)
-# print(elemento_estruturante)
+imagem_terminada("ImagensTeste/lorem_s12_c02_noise.pbm", "imagens-salvas/final.pbm", elemento_estruturante)
+
+
+
+
 
 
 # Aplicar abertura
-img = fechamento(l,a,it,elemento_estruturante)
-salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, it)
-
+#img = fechamento(l,a,it,elemento_estruturante)
+#salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, it)
+# l,a, it = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
+#l, a, it = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
 # Aplicar a dilatação
 # imagem_nova = dilatacao(l, a, it,elemento_estruturante)
 
@@ -260,15 +325,3 @@ salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, it)
 # print(a)
 # lorem_s12_c02_just.pbm, lorem_s12_c02_espacos_noise.pbm
 
-# print(f"Largura: {l}")
-# print(f"Altura: {a}")
-# print(f"Valor Máximo de Intensidade: {valor_maximo}")
-# print(f"Dados de Intensidade: {intensidade}")
-# print(type(intensidade))
-
-
-# Exemplo de uso
-# nome_arquivo_entrada = 'Figuras/lago_escuro.pgm'
-
-# Lê a imagem do arquivo de entrada
-# largura, altura, valor_maximo, dados_imagem = ler_arquivo_pgm(nome_arquivo_entrada)
