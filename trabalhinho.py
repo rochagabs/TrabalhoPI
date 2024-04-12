@@ -256,7 +256,7 @@ def soma_imagem(imagem1, imagem2, imagem_final):
 
 def imagem_terminada(imagem_entrada, imagem_saida, elem):
     largura, altura, intensidade = ler_arquivo_pgm(imagem_entrada)
-    intensidade = filtro_mediana(largura, altura, intensidade)
+    #intensidade = filtro_mediana(largura, altura, intensidade)
     # for i in range(1):
     #     print(f"{i + 1}. iteração")
     #     img = dilatacao(largura, altura, intensidade, elem)
@@ -287,52 +287,9 @@ def contar_linhas_texto(imagem):
 
     return contador
 
-listaa = [0, 0, 0, 1, 1, 1, 0, 0, 0]
 lista2 = [1,1,1,1,1,1]
 elemento_estruturante = lista_para_matriz(2, 3, lista2)
-imagem_terminada("ImagensTeste/lorem_s12_c03_noise.pbm", "ImagensTeste/escrever.pbm", elemento_estruturante)
-
+imagem_terminada("ImagensTeste/texto4.pbm", "ImagensTeste/escrever.pbm", elemento_estruturante)
 total_linhas = contar_linhas_texto("ImagensTeste/escrever.pbm")
 print(total_linhas)
 
-# Aplicar abertura
-# img = fechamento(l,a,it,elemento_estruturante)
-# salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, it)
-# l,a, it = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
-# l, a, it = ler_arquivo_pgm("ImagensTeste/lorem_s12_c02_noise.pbm")
-# Aplicar a dilatação
-# imagem_nova = dilatacao(l, a, it,elemento_estruturante)
-
-# imagem_dilatacao = dilatacao(l, a, it,elemento_estruturante)
-
-# Aplicar a erosão
-# imagem_erosao = erosao(l, a, it, elemento_estruturante)
-
-
-# for i in range(10):
-#     print(f"{i+1}. iteração")
-#     l, a, it = ler_arquivo_pgm("ImagensTeste/escrever.pbm")
-#     img = abertura(l, a, it, elemento_estruturante)
-#     salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, img)
-
-# Aplicar filtro da mediana
-# imagem_filtrada = filtro_mediana("ImagensTeste/lorem_s12_c02_noise.pbm")
-
-# Salvar a nova imagem
-# salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, negativa)
-
-# salvar_arquivo_pgm("ImagensTeste/imagem_filtrada.pbm", l, a, imagem_filtrada)
-
-
-# l, a, it = ler_arquivo_pgm("ImagensTeste/imagem_filtrada.pbm")
-
-# imagem_dilatacao = dilatacao(l, a, it,elemento_estruturante)
-# imagem_erosao = erosao(l, a, it, elemento_estruturante)
-
-# salvar_arquivo_pgm("ImagensTeste/imagem_dilatada.pbm", l, a, imagem_dilatacao)
-# salvar_arquivo_pgm("ImagensTeste/escrever.pbm", l, a, imagem_erosao)
-
-# print(intensidade)
-# print(l)
-# print(a)
-# lorem_s12_c02_just.pbm, lorem_s12_c02_espacos_noise.pbm
