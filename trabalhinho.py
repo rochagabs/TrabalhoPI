@@ -207,15 +207,15 @@ def soma_imagem(imagem1, imagem2, imagem_final):
 
 def imagem_terminada(imagem_entrada, imagem_saida, elem):
     largura, altura, intensidade = ler_arquivo_pgm(imagem_entrada)
-    #intensidade = filtro_mediana(largura, altura, intensidade)
-    # for i in range(1):
-    #     print(f"{i + 1}. iteração")
-    #     img = dilatacao(largura, altura, intensidade, elem)
-    #     intensidade = img
+    intensidade = filtro_mediana(largura, altura, intensidade)
+    for i in range(5):
+         print(f"{i + 1}. iteração")
+         img = dilatacao(largura, altura, intensidade, elem)
+         intensidade = img
     # img = abertura(largura, altura, img, elem)
     img = filtro_mediana(largura, altura, intensidade)
-    #com_sobel = sobel(largura, altura, img)
-    #aplicar_negativo(largura, altura, com_sobel, imagem_saida)
+    # com_sobel = sobel(largura, altura, img)
+    # aplicar_negativo(largura, altura, com_sobel)
     salvar_arquivo_pgm(imagem_saida, largura, altura, img)
 
 
